@@ -1,0 +1,214 @@
+# RLDiff/train_config.yaml
+
+# ================================
+# General Arguments
+# ================================
+log_dir: 'workdir/test_score'                    # Folder in which to save model and logs
+restart_dir: null                                # Folder of previous training model from which to restart
+restart_ckpt: 'last_model'                       # Checkpoint name to restart from
+pretrain_dir: null                               # Folder of pretrained model from which to restart
+pretrain_ckpt: null                              # Pretrained checkpoint name
+freeze_params: 0                                 # Number of layers to freeze (if applicable)
+cache_path: 'DiffDock/data/cache'                # Folder from where to load/restore cached dataset
+moad_dir: 'data/BindingMOAD_2020_ab_processed_biounit/'     # Updated path to match first list
+dataset: 'generalisation'                            # Dataset name to use
+pdbbind_dir: 'RLDiff/data/astex_diverse_set'
+pdbbind_full_path: null            # Absolute path to PDBBind refined-set dir
+checkpoint_base_dir: 'checkpoints' # Prefix for the auto-named checkpoint directory
+split_train: 'RLDiff/data/splits/timesplit_no_lig_overlap_train'
+split_val: 'RLDiff/data/splits/timesplit_no_lig_overlap_val'
+split_test: 'RLDiff/data/splits/timesplit_test_no_rec_overlap'
+test_sigma_intervals: true                       # Whether to log loss per noise interval
+val_inference_freq: 5                            # Frequency of epochs to run inference on validation data
+save_model_freq: null                            # Frequency to save model checkpoints (set to null to disable)
+inference_samples: 5                             # Number of samples per data point during inference
+train_inference_freq: null                       # Frequency of epochs to run inference on training data (set to null to disable)
+inference_steps: 20                            # Number of denoising steps for inference on validation
+num_inference_complexes: 500                     # Number of complexes for inference every val/train_inference_freq epochs
+inference_earlystop_metric: 'valinf_min_rmsds_lt2' # Metric used for early stopping during inference
+inference_secondary_metric: 'valinf_min_rmsds_lt2'
+inference_earlystop_goal: 'max'                  # Whether to maximize or minimize the early stopping metric
+wandb: true                                       # Whether to use Weights & Biases for logging
+project: 'RLDiff'                             # Updated to match first list
+run_name: 'redock, scaled'                            # Updated to match first list
+cudnn_benchmark: true                            # CUDA optimization parameter for faster training
+num_dataloader_workers: 1                        # Updated to match first list
+pin_memory: false                                # Updated to match first list
+dataloader_drop_last: false                      # Whether to drop the last incomplete batch in dataloader
+double_val: true                                 # Whether to use a second validation set
+combined_training: true                           # Updated to match first list
+out_dir: 'RLDiff/'
+initial_noise_std_proportion: 1.4601642460337794
+choose_residue: false
+model_dir: RLDiff/diffdock_models/score_model
+ckpt: best_ema_inference_epoch_model.pt
+confidence_ckpt: best_model_epoch75.pt
+confidence_model_dir: ./workdir/v1.1/confidence_model
+samples_per_complex: 1
+checkpoint_dir: RLDiff/checkpoints
+num_updates_per_sampling: 3
+update_model_old_every: 1
+samples_per_complex: 2    # Total trajectories to generate per complex
+inference_steps: 20        # Total inference steps in sampling
+training_steps: 20         # Number of steps actually saved in trajectory
+step_chunk_size: 1        # How many steps to process at once per trajectory
+clip_range: 0.3       # PPO clipping parameter
+decay_factor: 0.95
+max_grad_norm: 2
+trajectory_chunk_size: 4
+num_complexes_to_sample: 3
+do_val_run_every: 5
+branched_steps: 0
+
+
+
+# ================================
+# Training Arguments
+# ================================
+n_epochs: 400                  # Number of training epochs
+learning_rate: 0.0005           # Learning rate
+batch_size: 1                  # Batch size
+accumulation_steps: 1
+scheduler: 'plateau'             # Learning rate scheduler type
+scheduler_patience: 30           # Patience for the learning rate scheduler
+lr_start_factor: 0.001           # Starting factor for learning rate
+warmup_dur: 4                    # Number of warmup epochs
+restart_lr: null                 # Learning rate when restarting from a checkpoint
+w_decay: 0.0                     # Weight decay for optimizer
+num_workers: 1                  # Number of workers for preprocessing
+use_ema: true                    # Whether to use Exponential Moving Average for model weights
+ema_rate: 0.999                  # Decay rate for the exponential moving average
+num_samples_per_data: 1
+
+# ================================
+# Dataset Arguments
+# ================================
+limit_complexes: 0                              # 0 means no limit
+all_atoms: false                                 # Whether to use the all atoms model
+chain_cutoff: 10.0                              # Cutoff on whether to include non-interacting chains
+receptor_radius: 15                           # Cutoff on distances for receptor edges
+c_alpha_max_neighbors: 24                       # Maximum number of neighbors for each residue
+atom_radius: 5.0                                 # Cutoff on distances for atom connections
+atom_max_neighbors: 8                            # Maximum number of atom neighbours for receptor
+matching_popsize: 20                             # Differential evolution population size parameter in matching
+matching_maxiter: 20                             # Differential evolution max iterations parameter in matching
+matching_tries: 1                                # Number of tries for matching
+max_lig_size: null                               # Maximum number of heavy atoms in ligand
+remove_hs: true                                  # Whether to remove hydrogen atoms
+num_conformers: 1                                # Number of conformers to match to each ligand
+moad_esm_embeddings_path: 'data/BindingMOAD_2020_ab_processed_biounit/moad_sequences_new.pt' # Path to MOAD ESM embeddings
+pdbbind_esm_embeddings_path: 'data/esm2_3billion_embeddings.pt'                         # Path to PDBBind ESM embeddings
+moad_esm_embeddings_sequences_path: 'data/BindingMOAD_2020_ab_processed_biounit/sequences_to_id.fasta' # Path to MOAD ESM embeddings sequences
+esm_embeddings_model: None                       # ESM embeddings model name
+not_fixed_knn_radius_graph: false               # Whether to use KNN graph without fixed radius
+knn_only_graph: true                       # Whether to use KNN graph only without radius restriction
+include_miscellaneous_atoms: false              # Whether to include non-amino acid atoms for the receptor
+train_multiplicity: 1                           # Multiplicity for training data
+val_multiplicity: 1                             # Multiplicity for validation data
+max_receptor_size: null                         # Maximum receptor size (set to null to disable)
+remove_promiscuous_targets: null                # Whether to remove promiscuous targets (set to null to disable)
+min_ligand_size: 2                              # Minimum number of heavy atoms in ligand
+unroll_clusters: true                           # Whether to unroll clusters in the dataset
+enforce_timesplit: true                         # Whether to enforce time-based splits
+merge_clusters: 3                               # Number of clusters to merge
+triple_training: true                           # Whether to perform triple training
+crop_beyond: 20                                 # Crop distance beyond which to include atoms
+asynchronous_noise_schedule: false              # Corrected spelling
+
+# ================================
+# Diffusion Arguments
+# ================================
+tr_weight: 0.33                               # Weight of translation loss
+rot_weight: 0.33                               # Updated from 0.33 to match first list
+tor_weight: 0.33                              # Weight of torsional loss
+confidence_weight: 0.33                       # Weight of confidence loss
+tr_sigma_max: 5.0
+tr_sigma_min: 0.1                          # Maximum sigma for translation
+rot_sigma_max: 1.55
+rot_sigma_min: 0.03
+tor_sigma_max: 3.14
+tor_sigma_min: 0.03                            # Maximum sigma for torsion
+sigma_schedule: 'expbeta'                     # Sigma schedule type
+rot_sigma_schedule: 'expbeta'                 # Rotation sigma schedule type
+tor_sigma_schedule: 'expbeta'                 # Torsion sigma schedule type
+no_torsion: false                             # If set, only rigid matching
+temp_sampling_tr: 0.9766350103728372
+temp_sampling_rot: 6.077432837220868
+temp_sampling_tor: 6.761568162335063
+
+temp_psi_tr: 1.5102572175711826
+temp_psi_rot: 0.8141168207563049
+temp_psi_tor: 0.7661845361370018
+
+temp_sigma_data_tr: 0.48884149503636976
+temp_sigma_data_rot: 0.48884149503636976
+temp_sigma_data_tor: 0.48884149503636976
+sampling_alpha: 1.0                           # Alpha parameter of beta distribution for sampling t
+sampling_beta: 1.0                            # Beta parameter of beta distribution for sampling t
+bootstrap_alpha: 1.0                          # Alpha parameter for bootstrapping sampling
+bootstrap_beta: 1.0                           # Beta parameter for bootstrapping sampling
+bootstrap_tmin: 0.0                           # Minimum t for bootstrapping sampling
+add_bootstrapping_dataset: false              # Whether to add bootstrapping dataset
+bootstrapping_dataset_confidence_cutoff: 0     # Confidence cutoff for bootstrapping dataset
+bootstrapping_dataset_iterations: 1            # Number of iterations for bootstrapping dataset
+bootstrapping_dataset_max_per_complex: 1000     # Max per complex for bootstrapping dataset
+bootstrapping_fixed_length: null               # Fixed length for bootstrapping dataset
+bootstrapping_temperature: 0.0                 # Temperature for bootstrapping dataset
+save_pdb_dir: 'RLDiff/intermediates'
+
+# ================================
+# Model Arguments
+# ================================
+num_conv_layers: 11                           # Number of interaction layers
+max_radius: 5.0                               # Radius cutoff for geometric graph
+scale_by_sigma: true                          # Whether to normalize the score
+norm_by_sigma: false                          # Whether to normalize the score
+ns: 48                                        # Updated from 16 to match first list
+nv: 10                                        # Updated from 4 to match first list
+dropout: 0.1                                  # Updated from 0.0 to match first list
+distance_embed_dim: 64                        # Embedding size for the distance
+cross_distance_embed_dim: 64                  # Embedding size for the cross distance
+no_batch_norm: false                          # If set, removes batch normalization
+use_second_order_repr: false                  # Whether to use up to first order representations or also second
+cross_max_distance: 80.0                       # Maximum cross distance in case not dynamic
+dynamic_max_cross: true                       # Whether to use dynamic distance cutoff
+smooth_edges: false                           # Whether to apply additional smoothing weight to edges
+odd_parity: false                             # Whether to impose odd parity in output
+embedding_type: "sinusoidal"                  # Type of diffusion time embedding
+sigma_embed_dim: 64                           # Size of the embedding of the diffusion time
+embedding_scale: 1000                         # Parameter of the diffusion time embedding
+use_old_atom_encoder: false                   # Option to use old atom encoder for backward compatibility
+depthwise_convolution: false                  # Whether to use depthwise convolution
+different_schedules: false                    # Whether to use different schedules
+
+protein_file: 'protein_processed'            # Protein file name
+no_aminoacid_identities: false               # Whether to exclude amino acid identities
+sh_lmax: 2                                    # Size of the spherical harmonic embedding
+no_differentiate_convolutions: false         # Whether to differentiate convolutions
+tp_weights_layers: 2                          # Number of layers for TP weights
+num_prot_emb_layers: 3                        # Number of protein embedding layers
+reduce_pseudoscalars: true                    # Whether to reduce pseudoscalars
+embed_also_ligand: true                       # Whether to embed ligands as well
+sidechain_loss_weight: 0.0                    # Weight of sidechain loss
+backbone_loss_weight: 0.0                     # Weight of backbone loss
+moad_esm_embeddings_path: 'data/BindingMOAD_2020_ab_processed_biounit/moad_sequences_new.pt'
+pdbbind_esm_embeddings_path: 'data/esm2_3billion_embeddings.pt'
+pdbsidechain_esm_embeddings_path: 'data/pdb_2021aug02/pdb_sequences_esm_20k.pt'
+inf_pocket_cutoff: 5
+include_miscellaneous_atoms: false
+inf_pocket_knowledge: false
+inf_sched_alpha: 1
+inf_sched_beta: 1
+prtoein_sequence_list: '[None]'
+
+# ================================
+# PDB Sidechain Training Arguments
+# ================================
+pdbsidechain_dir: 'data/pdb_2021aug02_sample'      # Directory for PDB sidechain training data
+pdbsidechain_esm_embeddings_path: null             # Path to PDB sidechain ESM embeddings (set to null to disable)
+pdbsidechain_esm_embeddings_sequences_path: null    # Path to PDB sidechain ESM embeddings sequences (set to null to disable)
+vandermers_max_dist: 5                             # Maximum distance for Vandermers features
+vandermers_buffer_residue_num: 10                  # Buffer residue number for Vandermers features
+vandermers_min_contacts: 5                         # Minimum contacts for Vandermers features
+remove_second_segment: false                      # Whether to remove the second segment in PDB sidechain training
+

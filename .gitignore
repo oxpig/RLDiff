@@ -1,0 +1,31 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# OS / editor / misc cache
+.DS_Store
+.cache/
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# Logs / run outputs
+*.log
+wandb/
+outputs/
+checkpoints/
+posebusters_docking_results/
+
+# Molecular structure files
+*.pdb
+*.sdf
+
+# Local generated CSVs
+inference_df_PB.csv
