@@ -1,0 +1,26 @@
+name: RLDiff
+channels:
+  - conda-forge
+dependencies:
+  - python=3.9.18
+  - pip=25.1.1
+  - numpy=1.26.4
+  - scipy=1.12.0
+  - biopython=1.85
+  - rdkit=2023.03.3
+  - tqdm=4.67.1
+  - smina=2020.12.10
+  - pip:
+      - --extra-index-url https://download.pytorch.org/whl/cu117
+      - pandas==1.5.1
+      - pyyaml==6.0.3
+      - e3nn==0.5.1
+      - fair-esm==2.0.0
+      - spyrmsd==0.9.0
+      - torch==1.13.1+cu117
+      - torch-geometric==2.2.0
+      - -f https://data.pyg.org/whl/torch-1.13.0+cu117.html
+      - torch-cluster==1.6.0+pt113cu117
+      - torch-scatter==2.1.0+pt113cu117
+      - torch-sparse==0.6.16+pt113cu117
+      - torch-spline-conv==1.2.1+pt113cu117
