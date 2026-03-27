@@ -249,14 +249,14 @@ def main():
     n_complexes = len(per_complex_df)
     summary = {
         "n_complexes_evaluated": int(n_complexes),
-        "top1_success_rate_rmsd_le_2": float(per_complex_df["top1_rmsd_le_2"].mean()),
-        "top1_success_rate_rmsd_le_2_and_pb_valid": float(per_complex_df["top1_rmsd_le_2_and_pb_valid"].mean()),
-        "oracle_success_rate_rmsd_le_2": float(per_complex_df["oracle_rmsd_le_2"].mean()),
-        "oracle_success_rate_rmsd_le_2_and_pb_valid": float(per_complex_df["oracle_rmsd_le_2_and_pb_valid"].mean()),
-        "n_top1_success_rmsd_le_2": int(per_complex_df["top1_rmsd_le_2"].sum()),
-        "n_top1_success_rmsd_le_2_and_pb_valid": int(per_complex_df["top1_rmsd_le_2_and_pb_valid"].sum()),
-        "n_oracle_success_rmsd_le_2": int(per_complex_df["oracle_rmsd_le_2"].sum()),
-        "n_oracle_success_rmsd_le_2_and_pb_valid": int(per_complex_df["oracle_rmsd_le_2_and_pb_valid"].sum()),
+        "top1_success_rate_rmsd_le_2": float(per_complex_df["top1_rmsd_leq_2"].mean()),
+        "top1_success_rate_rmsd_le_2_and_pb_valid": float(per_complex_df["top1_rmsd_leq_2_and_pb_valid"].mean()),
+        "oracle_success_rate_rmsd_le_2": float(per_complex_df["oracle_rmsd_leq_2"].mean()),
+        "oracle_success_rate_rmsd_le_2_and_pb_valid": float(per_complex_df["oracle_rmsd_leq_2_and_pb_valid"].mean()),
+        "n_top1_success_rmsd_le_2": int(per_complex_df["top1_rmsd_leq_2"].sum()),
+        "n_top1_success_rmsd_le_2_and_pb_valid": int(per_complex_df["top1_rmsd_leq_2_and_pb_valid"].sum()),
+        "n_oracle_success_rmsd_le_2": int(per_complex_df["oracle_rmsd_leq_2"].sum()),
+        "n_oracle_success_rmsd_le_2_and_pb_valid": int(per_complex_df["oracle_rmsd_leq_2_and_pb_valid"].sum()),
         "top_k_oracle": args.top_k_oracle,
         "skipped": skipped,
     }

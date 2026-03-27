@@ -7,12 +7,16 @@ Scan a base directory with structure:
 
 and write a CSV suitable for passing to inference.py --protein_ligand_csv.
 
-Only includes complexes whose IDs are listed in posebusters_308_ids.txt
-(located in the same directory as this script).
+Only includes complexes whose IDs are listed in one of:
+    - posebusters_308_ids.txt
+    - astex_diverse_85_ids.txt
+
+Both ID files are expected to live in the same directory as this script.
 
 Usage:
-    python make_csv.py --base_dir /path/to/dataset
-    python make_csv.py --base_dir /path/to/dataset --output my_input.csv
+    python make_csv.py --base_dir /path/to/dataset --id_list posebusters_308_ids.txt
+    python make_csv.py --base_dir /path/to/dataset --id_list astex_diverse_85_ids.txt
+    python make_csv.py --base_dir /path/to/dataset --id_list posebusters_308_ids.txt --output my_input.csv
 """
 
 import argparse
@@ -22,19 +26,33 @@ import os
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--base_dir', type=str, required=True,
-                        help='Base directory containing {cid}/{cid}_protein.pdb and {cid}/{cid}_ligand.sdf')
-    parser.add_argument('--output', type=str,
-                        default=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'inference_df.csv'),
-                        help='Output CSV path (default: inference_df.csv next to this script)')
+    parser.add_argument(
+        '--base_dir',
+        type=str,
+        required=True,
+        help='Base directory containing {cid}/{cid}_protein.pdb and {cid}/{cid}_ligand.sdf'
+    )
+    parser.add_argument(
+        '--id_list',
+        type=str,
+        required=True,
+        choices=['posebusters_308_ids.txt', 'astex_diverse_85_ids.txt'],
+        help='Which ID list to use (must be in the same directory as this script)'
+    )
+    parser.add_argument(
+        '--output',
+        type=str,
+        default=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'inference_df.csv'),
+        help='Output CSV path (default: inference_df.csv next to this script)'
+    )
     args = parser.parse_args()
 
     rows = []
     base_dir = os.path.abspath(args.base_dir)
 
-    # Load allowed IDs from posebusters_308_ids.txt (relative to this script)
+    # Load allowed IDs from the selected ID list (relative to this script)
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    ids_path = os.path.join(script_dir, 'posebusters_308_ids.txt')
+    ids_path = os.path.join(script_dir, args.id_list)
 
     if not os.path.isfile(ids_path):
         raise FileNotFoundError(f'Could not find ID list at {ids_path}')

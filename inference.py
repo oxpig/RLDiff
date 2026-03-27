@@ -234,6 +234,7 @@ def main(args):
         logging.debug(f'--filtering_model_dir is not set. Using tag: {args.tag}')
         args.filtering_model_dir = download_and_extract(f'{REPOSITORY_URL}/releases/download/{args.tag}/confidence_model.zip', base_model_dir, 'confidence_model')
 
+
     params_path = _BUILTIN_MODEL_PARAMS
     with open(params_path) as f:
         score_model_args = Namespace(**yaml.full_load(f))
@@ -305,7 +306,7 @@ def main(args):
                                use_old_wrong_embedding_order=score_model_args.use_old_wrong_embedding_order)
 
         filtering_test_dataset = filtering_complex_dict = None
-        if args.filtering_model_dir is not None:
+        if args.filtering_model_dir is not None and not args.minimize_and_rerank:
             if not (filtering_args.use_original_model_cache or filtering_args.transfer_weights):
                 print('HAPPENING | filtering model uses different type of graphs than the score model. Loading (or creating if not existing) the data for the filtering model now.')
                 filtering_test_dataset = PDBBind(transform=None,
@@ -340,16 +341,19 @@ def main(args):
                 filtering_complex_dict = {d.name: d for d in filtering_test_dataset}
 
     if args.state_dict is not None:
-        state_dict = args.state_dict
+            state_dict = args.state_dict
     else:
-        base_model_dir = os.path.join(args.model_cache_dir, args.tag)
-        os.makedirs(base_model_dir, exist_ok=True)
-        args.model_dir = download_and_extract(
-            f'{REPOSITORY_URL}/releases/download/{args.tag}/score_model.zip',
-            base_model_dir,
-            'score_model'
-        )
-        state_dict = os.path.join(args.model_dir, args.ckpt)
+        RLDIFF_MODEL_URL = 'https://github.com/oxpig/RLDiff/releases/download/v1.0.0/RLDiff_score_model.pt'
+        rldiff_cache_dir = os.path.join(args.model_cache_dir, 'rldiff')
+        os.makedirs(rldiff_cache_dir, exist_ok=True)
+        state_dict = os.path.join(rldiff_cache_dir, 'RLDiff_score_model.pt')
+        if not os.path.exists(state_dict):
+            print(f"Downloading RLDiff score model from {RLDIFF_MODEL_URL} ...")
+            import urllib.request
+            urllib.request.urlretrieve(RLDIFF_MODEL_URL, state_dict)
+            print(f"Saved to {state_dict}")
+        else:
+            print(f"RLDiff score model already cached at {state_dict}")
 
     model_args = copy.deepcopy(score_model_args)
     model_args.flexible_sidechains = True
@@ -360,7 +364,7 @@ def main(args):
     model = model.to(device)
     model.eval()
 
-    if args.filtering_model_dir is not None:
+    if args.filtering_model_dir is not None and not args.minimize_and_rerank:
         if filtering_args.transfer_weights:
             with open(f'{filtering_args.original_model_dir}/model_parameters.yml') as f:
                 filtering_model_args = Namespace(**yaml.full_load(f))
@@ -418,9 +422,12 @@ def main(args):
     print(f'Results are in {args.out_dir}')
 
     if args.minimize_and_rerank:
-        # Build {complex_key: protein_path} from the dataframe.
-        # complex_key matches the folder suffix written by infer_single_complex
-        # (complex_name with "/" replaced by "-").
+        # Free GPU memory before launching minimize workers
+        model = model.cpu()
+        del model
+        torch.cuda.empty_cache()
+        import gc; gc.collect()
+
         protein_path_map = {
             str(row['complex_name']).replace('/', '-'): str(row['experimental_protein'])
             for _, row in protein_ligand_df.iterrows()
@@ -439,7 +446,13 @@ if __name__ == "__main__":
     mp_method = "spawn"
     sharing_strategy = "file_system"
     logging.debug(f"Torch multiprocessing method: {mp_method}. Sharing strategy: {sharing_strategy}")
-    torch.multiprocessing.set_start_method(mp_method)
+
+    current_method = torch.multiprocessing.get_start_method(allow_none=True)
+    if current_method is None:
+        torch.multiprocessing.set_start_method(mp_method)
+    elif current_method != mp_method:
+        logging.warning(f"Multiprocessing start method already set to {current_method}, not changing to {mp_method}")
+
     torch.multiprocessing.set_sharing_strategy(sharing_strategy)
 
     parser = _get_parser()

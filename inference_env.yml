@@ -14,6 +14,7 @@ dependencies:
       - --extra-index-url https://download.pytorch.org/whl/cu117
       - pandas==1.5.1
       - pyyaml==6.0.3
+      - networkx==2.8.8
       - e3nn==0.5.1
       - fair-esm==2.0.0
       - spyrmsd==0.9.0
