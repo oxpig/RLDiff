@@ -343,17 +343,17 @@ def main(args):
     if args.state_dict is not None:
             state_dict = args.state_dict
     else:
-        RLDIFF_MODEL_URL = 'https://github.com/oxpig/RLDiff/releases/download/v1.0.0/RLDiff_score_model.pt'
-        rldiff_cache_dir = os.path.join(args.model_cache_dir, 'rldiff')
+        RLDIFF_MODEL_URL = 'https://github.com/oxpig/RLDiff/releases/download/v1.0.0/DD_Pocket_RL_score_model.pt'
+        rldiff_cache_dir = os.path.join(args.model_cache_dir, 'DD_Pocket_RL_score_model')
         os.makedirs(rldiff_cache_dir, exist_ok=True)
-        state_dict = os.path.join(rldiff_cache_dir, 'RLDiff_score_model.pt')
+        state_dict = os.path.join(rldiff_cache_dir, 'DD_Pocket_RL_score_model.pt')
         if not os.path.exists(state_dict):
-            print(f"Downloading RLDiff score model from {RLDIFF_MODEL_URL} ...")
+            print(f"Downloading DiffDock Pocket RL score model from {RLDIFF_MODEL_URL} ...")
             import urllib.request
             urllib.request.urlretrieve(RLDIFF_MODEL_URL, state_dict)
             print(f"Saved to {state_dict}")
         else:
-            print(f"RLDiff score model already cached at {state_dict}")
+            print(f"DiffDock Pocket RL score model already cached at {state_dict}")
 
     model_args = copy.deepcopy(score_model_args)
     model_args.flexible_sidechains = True
