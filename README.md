@@ -1,5 +1,5 @@
 # Teaching Diffusion Models Physics: Reinforcement Learning for Physically Valid Diffusion-Based Docking
-
+![RLDiff](RLDiff.png)
 RLDiff is the official codebase for the paper, Teaching Diffusion Models Physics, available [here](https://www.biorxiv.org/content/10.64898/2026.03.25.714128v1). We provide a reinforcement learning framework for fine-tuning diffusion-based docking models with non-differentiable rewards, alongside inference code for our models DiffDock-Pocket RL and DiffDock-Pocket RL++, the latter incorporating Vina minimization and GNINA re-ranking.
 
 Fine-tuned using the RLDiff reinforcement learning framework with PoseBusters validity checks as the reward, DiffDock-Pocket RL generates substantially more physically valid, near-native poses than the original DiffDock-Pocket and outperforms both classical docking methods and other ML-based approaches on the PoseBusters benchmark. As described in the paper, DiffDock-Pocket RL++ further improves performance across all success criteria.
