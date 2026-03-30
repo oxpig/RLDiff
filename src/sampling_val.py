@@ -14,13 +14,14 @@ from RLDiff.utils.sampling_utils import (
     slice_torsion_updates,
     handle_nans,
     compute_g,
-    _precompute_cumulative_scales
+    _precompute_cumulative_scales,
+    modify_conformer_batch
 )
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 diffdock_dir = os.path.abspath(os.path.join(current_dir, '..', '..'))
 sys.path.append(diffdock_dir)
-from utils.diffusion_utils import set_time, modify_conformer_batch
+from utils.diffusion_utils import set_time
 from utils.visualise import PDBFile
 
 

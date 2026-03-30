@@ -12,12 +12,12 @@ freeze_params: 0                                 # Number of layers to freeze (i
 cache_path: 'DiffDock/data/cache'                # Folder from where to load/restore cached dataset
 moad_dir: 'data/BindingMOAD_2020_ab_processed_biounit/'     # Updated path to match first list
 dataset: 'generalisation'                            # Dataset name to use
-pdbbind_dir: 'RLDiff/data/astex_diverse_set'
+pdbbind_dir: 'RLDiff/data/refined-set'
 pdbbind_full_path: null            # Absolute path to PDBBind refined-set dir
 checkpoint_base_dir: 'checkpoints' # Prefix for the auto-named checkpoint directory
-split_train: 'RLDiff/data/splits/timesplit_no_lig_overlap_train'
-split_val: 'RLDiff/data/splits/timesplit_no_lig_overlap_val'
-split_test: 'RLDiff/data/splits/timesplit_test_no_rec_overlap'
+split_train: 'data/splits/train_refined_PDBBind_valid.txt'
+split_val: 'data/splits/val_refined_PDBBind.txt'
+split_test: 'data/splits/val_refined_PDBBind.txt'
 test_sigma_intervals: true                       # Whether to log loss per noise interval
 val_inference_freq: 5                            # Frequency of epochs to run inference on validation data
 save_model_freq: null                            # Frequency to save model checkpoints (set to null to disable)

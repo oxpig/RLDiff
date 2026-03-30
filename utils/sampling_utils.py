@@ -7,6 +7,27 @@ from rdkit import Chem
 import os
 from argparse import Namespace
 
+
+def modify_conformer_batch(orig_pos, data, tr_update, rot_update, torsion_updates, mask_rotate):
+    B = data.num_graphs
+    N, M, R = data['ligand'].num_nodes // B, data['ligand', 'ligand'].num_edges // B, data['ligand'].edge_mask.sum().item() // B
+
+    pos, edge_index, edge_mask = orig_pos.reshape(B, N, 3) + 0, data['ligand', 'ligand'].edge_index[:, :M], data['ligand'].edge_mask[:M]
+    torsion_updates = torsion_updates.reshape(B, -1) if torsion_updates is not None else None
+
+    lig_center = torch.mean(pos, dim=1, keepdim=True)
+    rot_mat = axis_angle_to_matrix(rot_update)
+    rigid_new_pos = torch.bmm(pos - lig_center, rot_mat.permute(0, 2, 1)) + tr_update.unsqueeze(1) + lig_center
+
+    if torsion_updates is not None:
+        flexible_new_pos = modify_conformer_torsion_angles_batch(rigid_new_pos, edge_index.T[edge_mask], mask_rotate, torsion_updates)
+        R, t = rigid_transform_Kabsch_3D_torch_batch(flexible_new_pos, rigid_new_pos)
+        aligned_flexible_pos = torch.bmm(flexible_new_pos, R.transpose(1, 2)) + t.transpose(1, 2)
+        final_pos = aligned_flexible_pos.reshape(-1, 3)
+    else:
+        final_pos = rigid_new_pos.reshape(-1, 3)
+    return final_pos
+
 def calculate_mean(score: torch.Tensor, g: torch.Tensor, dt: float, current_t: float) -> Dict[str, torch.Tensor]:
     """
     Calculate the mean and pre-scaled mean for a transformation.
