@@ -226,7 +226,7 @@ def trajectory_generation(loader,
                                             batch_size=args.batch_size,
                                             temp_sampling=[args.temp_sampling_tr, args.temp_sampling_rot, args.temp_sampling_tor],
                                             temp_psi=[args.temp_psi_tr, args.temp_psi_rot, args.temp_psi_tor],
-                                            temp_sigma_data=[args.temp_sigma_data_tr, args.temp_sigma_data_rot, args.temp_sigma_data_tor],
+                                            #temp_sigma_data=[args.temp_sigma_data_tr, args.temp_sigma_data_rot, args.temp_sigma_data_tor],
                                             args=args, mode='Train', no_temp=no_temp)
                         except Exception as e:
                             print("\n \n sampling issue:", e, '\n \n')
@@ -258,7 +258,7 @@ def trajectory_generation(loader,
                             f"{current_pdbid}_{successful_samples}_leaf{leaf_idx}_final_ligand.sdf"
                         )
                         write_mol_with_coords(mol_pred, mol_pred_pos, output_file)
-                        pdbbind_directory = args.pdbbind_full_path
+                        pdbbind_directory = f"{parent_dir}/{args.pdbbind_dir}"
                         rec_path = os.path.join(pdbbind_directory, current_pdbid, f"{current_pdbid}_protein.pdb")
                         mol_true_path = os.path.join(pdbbind_directory, current_pdbid, f"{current_pdbid}_ligand.sdf")
 
@@ -518,7 +518,14 @@ def train_with_samples(
 
                     try:
                         processed_steps = compute_log_prob(
-                            step_chunks, model, device, args.step_chunk_size, step_start, args.no_early_step_guidance, args.alpha_step
+                            trajectories=step_chunks,
+                            model=model,
+                            device=device,
+                            args=args,
+                            step_size=args.step_chunk_size,
+                            step_start=step_start,
+                            no_early_step_guidance=args.no_early_step_guidance,
+                            alpha_step=args.alpha_step,
                         )
                         for processed_traj in processed_steps:
                             if done_with_update:

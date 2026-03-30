@@ -6,6 +6,57 @@ from typing import List, Dict
 from rdkit import Chem
 import os
 from argparse import Namespace
+from utils.geometry import axis_angle_to_matrix
+
+
+def rigid_transform_Kabsch_3D_torch_batch(A, B):
+    # R = Bx3x3 rotation matrix, t = Bx3x1 column vector
+
+    assert A.shape == B.shape
+    _, N, M = A.shape
+    if M != 3:
+        raise Exception(f"matrix A and B should be BxNx3")
+
+    A, B = A.permute(0, 2, 1), B.permute(0, 2, 1)
+
+    # find mean column wise: 3 x 1
+    centroid_A = torch.mean(A, axis=2, keepdims=True)
+    centroid_B = torch.mean(B, axis=2, keepdims=True)
+
+    # subtract mean
+    Am = A - centroid_A
+    Bm = B - centroid_B
+    H = torch.bmm(Am, Bm.transpose(1, 2))
+
+    # find rotation
+    U, S, Vt = torch.linalg.svd(H)
+    R = torch.bmm(Vt.transpose(1, 2), U.transpose(1, 2))
+
+    # reflection case
+    SS = torch.diag(torch.tensor([1., 1., -1.], device=A.device))
+    Rm = torch.bmm(Vt.transpose(1,2) @ SS, U.transpose(1, 2))
+    R = torch.where(torch.linalg.det(R)[:, None, None] < 0, Rm, R)
+    assert torch.all(torch.abs(torch.linalg.det(R) - 1) < 3e-3)  # note I had to change this error bound to be higher
+
+    t = torch.bmm(-R, centroid_A) + centroid_B
+    return R, t
+
+def modify_conformer_torsion_angles_batch(pos, edge_index, mask_rotate, torsion_updates):
+    pos = pos + 0
+    for idx_edge, e in enumerate(edge_index):
+        u, v = e[0], e[1]
+
+        # check if need to reverse the edge, v should be connected to the part that gets rotated
+        assert not mask_rotate[idx_edge, u]
+        assert mask_rotate[idx_edge, v]
+
+        rot_vec = pos[:, u] - pos[:, v]  # convention: positive rotation if pointing inwards
+        rot_mat = axis_angle_to_matrix(
+            rot_vec / torch.linalg.norm(rot_vec, dim=-1, keepdims=True) * torsion_updates[:, idx_edge:idx_edge + 1])
+
+        pos[:, mask_rotate[idx_edge]] = torch.bmm(pos[:, mask_rotate[idx_edge]] - pos[:, v:v + 1], torch.transpose(rot_mat, 1, 2)) + pos[:, v:v + 1]
+
+    return pos
 
 
 def modify_conformer_batch(orig_pos, data, tr_update, rot_update, torsion_updates, mask_rotate):

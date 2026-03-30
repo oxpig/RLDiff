@@ -6,7 +6,7 @@ import numpy as np
 from rdkit import Chem
 from rdkit.Chem import RemoveHs
 from scipy.spatial.transform import Rotation as R
-
+import os
 
 def compute_translation_likelihood(action: torch.Tensor,
                                 mean: torch.Tensor,
@@ -463,13 +463,14 @@ def pick_closest_torsion(optimal_torsions, mean_tor_new):
 
 def compute_optimal_score(complex_graph: dict,
                           device: torch.device,
+                          args,
                           pre_scaled_mean_tr: int = None,
                           pre_scaled_mean_tor: int = None,
                           pre_scaled_mean_rot: int = None,
                           tr_cum: int = None, tor_cum: int = None, rot_cum: int = None,
                           mean_rot_new=None, mean_tor_new=None):
     pdb_id = complex_graph.name[0][0]
-    base_dir = args.pdbbind_full_path
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', args.pdbbind_dir))
     ligand_file = f"{base_dir}/{pdb_id}/{pdb_id}_ligand.sdf"
 
     # Load ground truth coordinates (global)

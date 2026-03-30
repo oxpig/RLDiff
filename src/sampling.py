@@ -14,6 +14,7 @@ from RLDiff.utils.sampling_utils import (
     handle_nans,
     compute_g,
     _precompute_cumulative_scales,
+    modify_conformer_torsion_angles_batch,
     modify_conformer_batch
 )
 

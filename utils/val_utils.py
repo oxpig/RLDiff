@@ -69,7 +69,7 @@ class SkippedComplexTracker:
 
 
 VAL_SAMPLES_PER_COMPLEX = 5
-
+BLACKLIST = set()
 
 def trajectory_generation_val(loader,
                           model_traj_generation: torch.nn.Module,
@@ -170,7 +170,7 @@ def trajectory_generation_val(loader,
                                             batch_size=args.batch_size,
                                             temp_sampling=[args.temp_sampling_tr, args.temp_sampling_rot, args.temp_sampling_tor],
                                             temp_psi=[args.temp_psi_tr, args.temp_psi_rot, args.temp_psi_tor],
-                                            temp_sigma_data=[args.temp_sigma_data_tr, args.temp_sigma_data_rot, args.temp_sigma_data_tor],
+                                            #temp_sigma_data=[args.temp_sigma_data_tr, args.temp_sigma_data_rot, args.temp_sigma_data_tor],
                                             visualization_list=visualization_list,
                                             args=args, mode=mode, no_temp=no_temp)
                         except Exception as e:

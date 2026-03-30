@@ -21,7 +21,8 @@ def compute_step_probabilities(
     device: torch.device,
     complex_graph,
     no_early_step_guidance: bool,
-    alpha_step: int = None
+    args,
+    alpha_step: int = None,
 ) -> Dict:
     """
     Compute probabilities for a single step.
@@ -71,7 +72,7 @@ def compute_step_probabilities(
 
     # OPTIMAL ACTION FOR EACH COMPONENT
     tr_transformation_optimal, rot_transformation_optimal, tor_transformation_optimal = compute_optimal_score(
-        complex_graph, device,
+        complex_graph, device, args,
         pre_scaled_mean_tr, pre_scaled_mean_tor, pre_scaled_mean_rot,
         tr_cum, tor_cum, rot_cum, mean_rot_new, mean_tor_new
     )
@@ -189,6 +190,7 @@ def process_trajectory_chunk(
     step_size: int,
     model: torch.nn.Module,
     device: torch.device,
+    args,
     complex_graph_batch_model: Optional[torch.Tensor] = None,
     no_early_step_guidance: bool = False,
     alpha_step: int = None
@@ -229,6 +231,7 @@ def process_trajectory_chunk(
             score_tor_sliced_new[step_idx],
             device,
             complex_graph_batch_model,
+            args=args,
             no_early_step_guidance=no_early_step_guidance,
             alpha_step=alpha_step
         )
@@ -244,6 +247,7 @@ def compute_log_prob(
     trajectories: List[List[Dict]],
     model: torch.nn.Module,
     device: torch.device,
+    args,
     step_size: int = 2,
     step_start: int = None,
     no_early_step_guidance: bool = False,
@@ -269,7 +273,8 @@ def compute_log_prob(
                 model=model,
                 device=device,
                 no_early_step_guidance=no_early_step_guidance,
-                alpha_step=alpha_step
+                args=args,
+                alpha_step=alpha_step,
             )
             processed_steps.extend(chunk_steps)
 
