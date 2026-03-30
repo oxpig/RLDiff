@@ -518,26 +518,24 @@ if __name__ == "__main__":
                         help='Learning rate (default: 0.0001)')
     parser.add_argument('--no_temp', action='store_true', default =False,
                         help='Disable temperature during trajectory generation.')
-    parser.add_argument('--samples_per_complex', type=int, default=None,
+    parser.add_argument('--samples_per_complex', type=int, default=4,
                         help='samples_per_complex')
-    parser.add_argument('--num_complexes_to_sample', type=int, default=None,
+    parser.add_argument('--num_complexes_to_sample', type=int, default=12,
                         help='num_complexes_to_sample')
-    parser.add_argument('--branched_steps', type=int, default=None,
+    parser.add_argument('--branched_steps', type=int, default=8,
                         help='branched_steps')
     parser.add_argument('--alpha_step', type=int, default=None,
                         help='alpha_step')
     parser.add_argument('--no_early_step_guidance', action='store_true',
         default=False, help='If set, do NOT use optimal/blended early-step actions; always use the true action.'
     )
-    parser.add_argument('--branches_per_t', type=int, default=None,
+    parser.add_argument('--branches_per_t', type=int, default=2,
                         help='branches_per_t (for branched sampling)')
-    parser.add_argument(
-        '--branching_strategy', type=str, default=None,
-        choices=['normal', 'tree'],
-        help='Branching strategy: "normal" (last-K branches) or "tree" (branch off branches between branched_steps and branched_to).'
+    parser.add_argument('--branching_strategy', type=str, default='tree', choices=['normal', 'tree'],
+                        help='Branching strategy: "normal" (last-K branches) or "tree" (branch off branches between branched_steps and branched_to).'
     )
     parser.add_argument(
-        '--branched_to', type=int, default=None,
+        '--branched_to', type=int, default=4,
         help='(tree only) Stop branching at this step index (branching happens for steps t_end+1..t_start).'
     )
 
