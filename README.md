@@ -1,18 +1,14 @@
-# RLDiff
+# Teaching Diffusion Models Physics: Reinforcement Learning for Physically Valid Diffusion-Based Docking
 
-Official GitHub repository for:
+RLDiff is the official codebase for the paper, Teaching Diffusion Models Physics, available [here](https://www.biorxiv.org/content/10.64898/2026.03.25.714128v1). We provide a reinforcement learning framework for fine-tuning diffusion-based docking models with non-differentiable rewards, alongside inference code for our models DiffDock-Pocket RL and DiffDock-Pocket RL++, the latter incorporating Vina minimization and GNINA re-ranking.
 
-**Teaching Diffusion Models Physics: Reinforcement Learning for Physically Valid Diffusion-Based Docking** \
-J. Henry Broster, Bojana Popovic, Diana Kondinskaia, Charlotte M. Deane, Fergus Imrie \
-Read the paper [here](https://www.biorxiv.org/content/10.64898/2026.03.25.714128v1).
-
-RLDiff is a reinforcement learning fine-tuned version of DiffDock-Pocket, trained using PoseBusters checks to reward physical validity. Compared to the original DiffDock-Pocket, it generates substantially more physically valid, near-native poses, and outperforms both classical docking methods (Vina, GOLD) and ML-based approaches on the PoseBusters benchmark. Performance is further improved using Vina minimization and GNINA re-ranking, yielding strong results across all success criteria.
-
-> ⚠️ This repository is released alongside the preprint and currently supports inference. Training instructions will be added shortly.
+Fine-tuned using the RLDiff reinforcement learning framework with PoseBusters validity checks as the reward, DiffDock-Pocket RL generates substantially more physically valid, near-native poses than the original DiffDock-Pocket and outperforms both classical docking methods and other ML-based approaches on the PoseBusters benchmark. As described in the paper, DiffDock-Pocket RL++ further improves performance across all success criteria.
 
 ---
 
-## Installation
+## Inference
+
+### 1. Installation
 
 RLDiff is designed to be cloned inside DiffDock-Pocket:
 ```bash
@@ -28,7 +24,7 @@ conda env create -f inference_env.yml
 conda activate RLDiff
 ```
 
-### GNINA (required for `--minimize_and_rerank`)
+#### GNINA (required for `--minimize_and_rerank`)
 
 Download the GNINA binary, make it executable, and place it on your PATH:
 ```bash
@@ -37,11 +33,7 @@ chmod +x ~/bin/gnina
 export PATH="$HOME/bin:$PATH"
 ```
 
----
-
-## Inference
-
-### 1. Prepare your dataset CSV
+### 2. Prepare your dataset CSV
 
 > **Note:** RLDiff supports proteins with cofactors and HETATM records. You do not need to strip them from your input PDB files before running inference. If cofactors are involved in binding, retaining them may improve pose quality.
 
@@ -74,7 +66,7 @@ python make_csv.py \
   --output my_input.csv
 ```
 
-### 2. Run inference
+### 3. Run inference
 ```bash
 cd ..  # (if you are still in /data, return to RLDiff root)
 
@@ -100,7 +92,7 @@ python inference.py \
 | `--minimize_workers` | Parallel workers for smina/GNINA post-processing (default: 4) |
 | `--save_visualisation` | Save reverseprocess files for diffusion visualisation |
 
-### 3. Analyse results
+### 4. Analyse results
 
 > **Note:** `analyse_my_results.py` expects the directory structure produced by `--minimize_and_rerank`.
 
@@ -129,6 +121,50 @@ This writes four output files to `--out_dir`:
 | `pb_eval_per_complex.csv` | Per-complex Top-1 and Oracle aggregates |
 | `pb_eval_one_line.csv` | Single-row summary for easy comparison across methods |
 | `pb_eval_summary.json` | Full summary statistics as JSON |
+
+---
+
+## Training
+
+### 1. Installation
+
+Training requires a separate conda environment from inference:
+```bash
+conda env create -f training_env.yml
+conda activate RLDiff_train
+```
+
+### 2. Download PDBBind
+
+Download the PDBBind 2020 refined set from [pdbbind-plus.org.cn](https://pdbbind-plus.org.cn) (`PDBbind_v2020_refined.tar.gz`), then extract it into `RLDiff/data/`:
+```bash
+tar -xzf PDBbind_v2020_refined.tar.gz -C /path/to/DiffDock-Pocket/RLDiff/data/
+# produces RLDiff/data/refined-set/
+```
+
+Training splits are already provided in `data/splits/`.
+
+### 3. Configure and run training
+
+Run training:
+```bash
+python train.py
+```
+
+| Argument | Description |
+|---|---|
+| `--config` | Path to training YAML config (default: `train_config.yaml`) |
+| `--state_dict` | Path to a model checkpoint to resume from |
+| `--learning_rate` | Learning rate (default: `1e-4`) |
+| `--samples_per_complex` | Trajectories generated per complex per iteration |
+| `--num_complexes_to_sample` | Number of complexes sampled per training step |
+| `--branched_steps` | Step to begin branching from (counting down from T to 0) |
+| `--branched_to` | Step to stop branching at |
+| `--no_temp` | Disable temperature during trajectory generation |
+
+### Customising the reward (optional)
+
+To use a different reward signal, modify the `compute_rewards` function in `src/reward.py`.
 
 ---
 
