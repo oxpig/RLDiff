@@ -148,19 +148,26 @@ Training splits are already provided in `data/splits/`.
 
 Run training:
 ```bash
-python train.py
+python train.py \
+  --learning_rate 1e-4 \
+  --branched_steps 8 \
+  --branched_to 4 \
+  --branches_per_t 2 \
+  --samples_per_complex 4 \
+  --num_complexes_to_sample 12 \
+  --no_temp
 ```
 
 | Argument | Description |
 |---|---|
-| `--config` | Path to training YAML config (default: `train_config.yaml`) |
-| `--state_dict` | Path to a model checkpoint to resume from |
 | `--learning_rate` | Learning rate (default: `1e-4`) |
-| `--samples_per_complex` | Trajectories generated per complex per iteration |
-| `--num_complexes_to_sample` | Number of complexes sampled per training step |
 | `--branched_steps` | Step to begin branching from (counting down from T to 0) |
 | `--branched_to` | Step to stop branching at |
-| `--no_temp` | Disable temperature during trajectory generation |
+| `--branches_per_t` | Number of branches per step (default: `2`) |
+| `--samples_per_complex` | Trajectories generated per complex per iteration |
+| `--num_complexes_to_sample` | Number of complexes sampled per iteration |
+| `--state_dict` | Path to a model checkpoint to resume from |
+| `--no_temp` | Disable temperature during trajectory generation (recommended) |
 
 ### Customising the reward (optional)
 
