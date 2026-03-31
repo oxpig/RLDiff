@@ -43,7 +43,10 @@ From the `data/` directory, use `make_csv.py` to build an input CSV. It expects 
 {base_dir}/{cid}/{cid}_ligand.sdf
 ```
 
-Pass any `.txt` file of complex IDs (one per line) via `--id_list`. This can be an absolute path, a relative path, or just a filename (resolved relative to the `data/` directory, where the bundled `posebusters_308_ids.txt` and `astex_diverse_85_ids.txt` live):
+Pass any `.txt` file of complex IDs (one per line) via `--id_list`. This can be an absolute path, a relative path, or just a filename (resolved relative to the `data/` directory, where the `posebusters_308_ids.txt` and `astex_diverse_85_ids.txt` live).
+
+The PoseBusters Benchmark Set and Astex Diverse Set can be downloaded from [Zenodo](https://zenodo.org/records/8278563).
+
 ```bash
 cd data/ # From RLDiff root
 
