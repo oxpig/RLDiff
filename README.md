@@ -18,7 +18,7 @@ git clone git@github.com:oxpig/RLDiff.git
 cd RLDiff
 ```
 
-Create and activate the conda environment:
+Create and activate the inference conda environment:
 ```bash
 conda env create -f inference_env.yml
 conda activate RLDiff
@@ -131,7 +131,15 @@ This writes four output files to `--out_dir`:
 
 ### 1. Installation
 
-Training requires a separate conda environment from inference:
+RLDiff is designed to be cloned inside DiffDock-Pocket:
+```bash
+git clone git@github.com:plainerman/DiffDock-Pocket.git
+cd DiffDock-Pocket
+git clone git@github.com:oxpig/RLDiff.git
+cd RLDiff
+```
+
+Create and activate the training conda environment:
 ```bash
 conda env create -f training_env.yml
 conda activate RLDiff_train
@@ -139,11 +147,12 @@ conda activate RLDiff_train
 
 ### 2. Download PDBBind
 
-Download the PDBBind 2020 refined set from [pdbbind-plus.org.cn](https://pdbbind-plus.org.cn) (`PDBbind_v2020_refined.tar.gz`), then extract it into `RLDiff/data/`:
+Download the PDBBind 2020 refined set from [pdbbind](https://pdbbind-plus.org.cn/download) (`PDBbind_v2020_refined.tar.gz`), then extract it into `RLDiff/data/`:
 ```bash
 tar -xzf PDBbind_v2020_refined.tar.gz -C /path/to/DiffDock-Pocket/RLDiff/data/
 # produces RLDiff/data/refined-set/
 ```
+
 
 Training splits are already provided in `data/splits/`.
 
