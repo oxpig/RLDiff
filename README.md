@@ -26,11 +26,14 @@ conda activate RLDiff
 
 #### GNINA (required for `--minimize_and_rerank`)
 
-Download the GNINA binary, make it executable, and place it on your PATH:
+For NVIDIA Ada GPUs, download the GNINA v1.3.2 CUDA 12.8 binary. It requires compatible CUDA runtime libraries and cuDNN 9.
+
 ```bash
-wget https://github.com/gnina/gnina/releases/download/v1.0/gnina -O ~/bin/gnina
+mkdir -p ~/bin
+wget https://github.com/gnina/gnina/releases/download/v1.3.2/gnina.1.3.2.cuda12.8 -O ~/bin/gnina
 chmod +x ~/bin/gnina
 export PATH="$HOME/bin:$PATH"
+gnina --version
 ```
 
 ### 2. Prepare your dataset CSV
