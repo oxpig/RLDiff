@@ -197,6 +197,8 @@ To use a different reward signal, modify the `compute_rewards` function in `src/
   author={Broster, J. Henry and Popovic, Bojana and Kondinskaia, Diana and Deane, Charlotte M. and Imrie, Fergus},
   journal={Chemical Science},
   year={2026},
+  volume={17},
+  pages={19447--19458},
   doi={10.1039/D6SC02655A},
   url={https://doi.org/10.1039/D6SC02655A}
 }
